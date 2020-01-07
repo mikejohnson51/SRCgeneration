@@ -1,13 +1,25 @@
 Package: SRCgeneration
-Title: What the Package Does (One Line, Title Case)
+Title: Code base to generate Sythetic Rating Curves from terrain data
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+  person(given = "Mike", 
+    family = "Johnson", 
+    role = c("aut", "cre"), 
+    email = "jmj00@ucsb.edu", 
+    comment = c(ORCID = "0000-0002-5288-8350"))
 Description: What the package does (one paragraph).
+Depends:
+    R(>= 3.5.0)
+Imports:
+    httr,
+    sf,
+    dplyr,
+    fasterize,
+    magrittr,
+    raster,
+    stats,
+    utils
 License: CC0
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 6.1.1

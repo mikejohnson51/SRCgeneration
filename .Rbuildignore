@@ -1,3 +1,7 @@
 ^data-raw$
 ^README\.Rmd$
 ^LICENSE\.md$
+^test$
+^imgs$
+^.*\.Rproj$
+^\.Rproj\.user$
