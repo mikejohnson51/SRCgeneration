@@ -1,2 +1,4 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 # SRCgeneration
-Codebase for generating terrain based Sythetic Rating Curves
