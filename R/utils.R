@@ -1,3 +1,9 @@
+lookupN = data.frame(order = c(1:10),
+  inN = c(.083, .076, .067, .054, .046, .039, .038, .030, .023, .017),
+  outN = c(.181, .168, .150, .127, .108, .089, .087, .066, .053, .0383),
+  stringsAsFactors = FALSE
+)
+
 #' @title Global Variables
 #' @importFrom utils globalVariables 
 #' @keywords internal
@@ -27,7 +33,6 @@ buildTW_raster = function(r, nhd, TW){
     st_union() %>%
     st_as_sf() %>%
     fasterize::fasterize(r, background = 0)
-
 }
 
 #' @title Fill Data.frame

@@ -59,4 +59,5 @@ downloader <- function(dir, url){
   } else {
     message("\t", basename(url), " already exists ...")
   }
+  return(file)
 }

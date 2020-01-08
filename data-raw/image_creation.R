@@ -44,12 +44,11 @@ prep_sf = function(input){
     dplyr::select(siteID, lon, lat,COMID = COMID.x, nrmse = nrmse, order = order ) %>% 
     mutate(error = rank(nrmse)) %>% 
     st_as_sf(coords = c("lon", 'lat'), crs = '+proj=longlat +datum=WGS84')
-  
 }
 
 # External Data (not checked in) ------------------------------------------
 
-load('./data/usgs_filter.rda')
+load('/Users/mikejohnson/Documents/GitHub/hand_improvements/data/usgs_filter.rda')
 files  = list.files('/Users/mikejohnson/Documents/GitHub/hand_improvements/output/', full.names = T)
 tmp    = list()
 
@@ -136,39 +135,62 @@ for(i in 1:5){
     labs(title = names(all)[i]) +
     mapTheme() 
   
-  ggsave(g, filename = paste0("/Users/mikejohnson/Documents/GitHub/SRCgeneration/imgs/map_", names(all)[i], "_method.png"), width = 14, height = 9.33, dpi = 300)
+  ggsave(g, filename = paste0("/Users/mikejohnson/Documents/GitHub/SRCgeneration/imgs/map_", names(all)[i], "_method.png"), width = 9, height = 6, dpi = 300)
 }
 
 ## PANEL B
+composite$nrmse[composite$nrmse < 250] %>% median(na.rm = T)
 
-tab = usgs_table %>% st_transform(5070)
+
+tab = usgs_composite %>% st_transform(5070)
 mer = st_intersection(tab, conus) %>% 
   group_by(state_abbr) %>% 
-  summarise(m = mean(nrmse[nrmse < 250], na.rm = TRUE), n= n()) %>% 
+  summarise(m = median(nrmse, na.rm = TRUE), n= n()) %>% 
   ungroup() %>% 
   st_drop_geometry()
 
-tab_sp = merge(conus, mer)
+tab2 = usgs_table %>% st_transform(5070)
+mer2 = st_intersection(tab2, conus) %>% 
+  group_by(state_abbr) %>% 
+  summarise(m = median(nrmse, na.rm = TRUE), n= n()) %>% 
+  ungroup() %>% 
+  st_drop_geometry()
+
+tab_sp2 = merge(conus, mer2)
 sorted = tab_sp$state_abbr[order(tab_sp$m)]
 vals = tab_sp$m[order(tab_sp$m)]
 
-sta = list(sorted[1], sorted[25], sorted[49])
-val = list(vals[1], vals[25], vals[49])
+sta = list(sorted[1], sorted[25], sorted[48])
+val = list(vals[1], vals[25], vals[48])
 cond = paste(c("Best", "Average", "Worst"), "Performing:\n ")
 
 subs = aoi_get(state = unlist(sta))
 
 ### PART 1
 
-ggplot() +
-  geom_sf(data = tab_sp, aes(fill = m), color = NA, lwd = .25) +  
+g1 = ggplot() +
+  geom_sf(data = tab_sp, aes(fill = m/100), color = NA, lwd = .25) +  
   geom_sf(data = st_union(conus), 
           fill = NA, color = 'black', lwd = 1.1) +
-  geom_sf(data = subs, fill = NA,color = 'gray70', lwd = 3) +
-  geom_sf(data = subs, fill = NA,color = 'black', lwd = 1) +
+  #geom_sf(data = subs, fill = NA,color = 'gray70', lwd = 3) +
+  #geom_sf(data = subs, fill = NA,color = 'black', lwd = 1) +
   scale_fill_gradient2(position="bottom" , low = "blue", mid = scales::muted("blue"), high = "darkred", 
-                       midpoint = median(tab_sp$m)) +
+                       midpoint = .3) +
+  mapTheme() +
+  theme(legend.position = 'none')
+
+g2 = ggplot() +
+  geom_sf(data = tab_sp2, aes(fill = m/100), color = NA, lwd = .25) +  
+  geom_sf(data = st_union(conus), 
+          fill = NA, color = 'black', lwd = 1.1) +
+  #geom_sf(data = subs, fill = NA,color = 'gray70', lwd = 3) +
+  #geom_sf(data = subs, fill = NA,color = 'black', lwd = 1) +
+  scale_fill_gradient2(position="bottom" , low = "blue", mid = scales::muted("blue"), high = "darkred", 
+                       midpoint = .3) +
   mapTheme() 
+
+library(patchwork)
+g1+g2
 
 ggsave(file = paste0("/Users/mikejohnson/Documents/GitHub/SRCgeneration/imgs//state_map_soc.png"), height = 12, width = 18, dpi = 300)
 
@@ -191,7 +213,7 @@ for(i in 1:length(sta)){
     scale_fill_brewer("nRMSE (%)", palette = "RdYlGn", labels = lab, direction = -1) +
     geom_sf(data = yy, aes(fill = as.factor(error),
                            color = as.factor(error)), 
-            size = .8) + 
+            size = 1.8) + 
     mapTheme() +
     labs(caption= paste0(cond[i], round(val[[i]], 2), "% mean nRMSE (excluding outliers)")) + 
     theme(plot.caption = element_text(hjust=0.5, size=rel(3))) +
@@ -203,7 +225,7 @@ for(i in 1:length(sta)){
 # Figure 4 ----------------------------------------------------------------
 
 ## PART A
-
+composite = filter(raw, type == "combo")
 plots = list()
 for(i in 1:10){
   
@@ -216,7 +238,8 @@ for(i in 1:10){
     geom_vline(xintercept = mean(test$outN), col = 'blue', lty = 2, lwd = 1) + 
     labs(title = paste0("Stream Order ", i),
          x = "N",
-         y = "Density") + theme_light()
+         y = "Density") + theme_light() +
+    theme(plot.title = element_text(hjust=0.5, size=rel(2)))
 }
 
 fin = gridExtra::grid.arrange(plots[[1]], 

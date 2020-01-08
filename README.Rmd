@@ -15,13 +15,18 @@ knitr::opts_chunk$set(
 library(SRCgeneration)
 library(AOI)
 library(HydroData)
+library(leaflet)
 ```
 
 ```{r}
 
-AOI = aoi_get(list("UCSB", 10, 10)) %>% 
-  aoi_map()
 
+AOI = aoi_get(list("UCSB", 10, 10)) 
+nhd = HydroData::findNHD(AOI)
+
+aoi_map(AOI, returnMap = T) %>% addPolylines(data = nhd$nhd)
+
+```
 
 ```
 
