@@ -131,7 +131,7 @@ for(i in 1:5){
     scale_fill_brewer("nRMSE (%)", palette = "RdYlGn", 
                       labels = lab, direction = -1) +
     geom_sf(data = p, aes(fill = as.factor(error), color = as.factor(error)), 
-            size = .05) + 
+            size = .07) + 
     labs(title = names(all)[i]) +
     mapTheme() 
   
@@ -237,9 +237,12 @@ for(i in 1:10){
     geom_vline(xintercept = mean(test$inN), col = 'red', lty = 2, lwd = 1) +
     geom_vline(xintercept = mean(test$outN), col = 'blue', lty = 2, lwd = 1) + 
     labs(title = paste0("Stream Order ", i),
-         x = "N",
-         y = "Density") + theme_light() +
-    theme(plot.title = element_text(hjust=0.5, size=rel(2)))
+         x = "",
+         y = ""
+         ) + theme_light() +
+    theme(plot.title = element_text(size=rel(2))) +
+    theme(axis.text.x = element_text(size=16),
+          axis.text.y = element_text(size=16))
 }
 
 fin = gridExtra::grid.arrange(plots[[1]], 
